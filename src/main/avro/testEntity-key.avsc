@@ -1,7 +1,7 @@
 {
   "type" : "record",
-  "name" : "EntitlementKey",
-  "namespace" : "com.findinpath.avro",
+  "name" : "TestEntityKey",
+  "namespace" : "com.test.avro",
   "fields" : [ {
     "name" : "id",
     "type" : "int"
