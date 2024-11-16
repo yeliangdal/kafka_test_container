@@ -1,0 +1,19 @@
+{
+  "type" : "record",
+  "name" : "TestEntityValue",
+  "namespace" : "com.test.avro",
+  "fields" : [
+    {
+    "name" : "id",
+    "type" : "int"
+    },
+    {
+      "name" : "sportId",
+      "type" : "int"
+    },
+    {
+      "name" : "rowId",
+      "type" : "int"
+    }
+  ]
+}

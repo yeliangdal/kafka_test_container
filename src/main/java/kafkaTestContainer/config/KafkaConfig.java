@@ -1,2 +1,7 @@
-package kafkaTestContainer.config;public class KafkaConfig {
+package kafkaTestContainer.config;
+
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class KafkaConfig {
 }
