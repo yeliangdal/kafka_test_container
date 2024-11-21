@@ -3,12 +3,60 @@
  */
 package kafkaTestContainer;
 
+import kafkaTestContainer.playground.Playground;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TransferQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        Playground pg = new Playground();
+//        Runnable r1 = () -> {
+//            for(int i = 0; i < 20; i++) {
+////                System.out.print(counter.getAndAdd(1)+" ");
+//                System.out.print(++pg.c+" ");
+//            }
+//        };
+
+        Runnable r3 = () -> {
+            synchronized (pg) {
+                pg.incrementCounter();
+            }
+        };
+
+        ExecutorService service = null;
+        ReentrantLock lock = new ReentrantLock();
+        try {
+            service = Executors.newCachedThreadPool();
+            System.out.println("start");
+//            Future<?> future = service.submit(r2);
+//            Future<?> f2 = service.submit(r1);
+            for(int i = 0; i < 10; i++) {
+                service.submit(() -> {
+                    pg.incrementCounter(lock);
+                });
+            }
+            TimeUnit.SECONDS.sleep(1);
+//            if(lock.tryLock()) {
+//                try {
+//                    System.out.println("Lock obtained, entering protected code");
+//                } finally {
+//                    lock.unlock();
+//                }
+//            } else {
+//                System.out.println("Unable to acquire lock, doing something else");
+//            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            assert service != null;
+            service.close();
+        }
+
     }
 }
