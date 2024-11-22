@@ -83,7 +83,7 @@ public class Playground {
     public static void main(String[] args) throws BrokenBarrierException, InterruptedException {
 
         System.out.println(List.of(1,2,3,4,5,6)
-                .parallelStream()
+                .stream().parallel()
                 .reduce(0, (a,b) -> (a - b)));
 
     }
