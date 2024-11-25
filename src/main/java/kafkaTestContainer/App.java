@@ -55,7 +55,7 @@ public class App {
             throw new RuntimeException(e);
         } finally {
             assert service != null;
-            service.close();
+            service.shutdown();
         }
 
     }

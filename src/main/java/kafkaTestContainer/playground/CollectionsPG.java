@@ -1,6 +1,7 @@
 package kafkaTestContainer.playground;
 
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Semaphore;
+
 
 public class CollectionsPG {
     public static void main(String... args) throws InterruptedException {
@@ -8,34 +9,64 @@ public class CollectionsPG {
         Runnable r1 = () -> System.out.println("first");
         Runnable r2 = () -> System.out.println("second");
         Runnable r3 = () -> System.out.println("third");
-        foo.second(r2);
-        foo.first(r1);
-        foo.third(r3);
+        new Thread(()-> {
+            try {
+                foo.third(r3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+        new Thread(()-> {
+            try {
+                foo.first(r1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+        new Thread(()-> {
+            try {
+                foo.second(r2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
     }
+
+
 }
 
 class Foo {
-    ReentrantLock lock1 = new ReentrantLock();
-    ReentrantLock lock2 = new ReentrantLock();
-    public Foo() {
+    Semaphore isSecondReady = new Semaphore(0);
+    Semaphore isThirdReady = new Semaphore(0);
 
+    public Foo() {
     }
 
     public void first(Runnable printFirst) throws InterruptedException {
-//try(lock1.tryLock())
-        // printFirst.run() outputs "first". Do not change or remove this line.
-        printFirst.run();
+        try {
+            printFirst.run();
+        } finally {
+            isSecondReady.release(1);
+        }
     }
 
     public void second(Runnable printSecond) throws InterruptedException {
-
-        // printSecond.run() outputs "second". Do not change or remove this line.
-        printSecond.run();
+        try {
+            isSecondReady.acquire();
+            printSecond.run();
+        } finally {
+            isThirdReady.release(1);
+        }
+//        printSecond.run();
     }
 
     public void third(Runnable printThird) throws InterruptedException {
-
-        // printThird.run() outputs "third". Do not change or remove this line.
-        printThird.run();
+        try {
+            isThirdReady.acquire();
+            printThird.run();
+        } finally {
+            isThirdReady.release();
+        }
     }
 }
