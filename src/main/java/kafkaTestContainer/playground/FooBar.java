@@ -9,7 +9,6 @@ class FooBar {
 
     ReentrantLock lock = new ReentrantLock();
     Condition wait = lock.newCondition();
-//    Condition barWait = lock.newCondition();
 
     AtomicBoolean isFooTurn = new AtomicBoolean(true);
 
@@ -20,8 +19,9 @@ class FooBar {
     public void foo(Runnable printFoo) throws InterruptedException {
 
         for (int i = 0; i < n; i++) {
-            if (lock.tryLock()) {
+//            if (lock.tryLock()) {
                 try{
+                    lock.lock();
                     while (!isFooTurn.get()){
                         wait.await();
                     }
@@ -31,8 +31,7 @@ class FooBar {
                     wait.signalAll();
                     lock.unlock();
                 }
-            }
-            // printFoo.run() outputs "foo". Do not change or remove this line.
+//            }
         }
     }
 
@@ -40,8 +39,9 @@ class FooBar {
 
         for (int i = 0; i < n; i++) {
 
-            if (lock.tryLock()) {
+//            if (lock.tryLock()) {
                 try{
+                    lock.lock();
                     while (isFooTurn.get()){
                         wait.await();
                     }
@@ -51,15 +51,12 @@ class FooBar {
                     wait.signalAll();
                     lock.unlock();
                 }
-            }
-
-            // printBar.run() outputs "bar". Do not change or remove this line.
-            printBar.run();
+//            }
         }
     }
 
     public static void main(String... args) throws InterruptedException {
-        FooBar fooBar = new FooBar(3);
+        FooBar fooBar = new FooBar(4);
         Runnable r1 = () -> System.out.println("foo");
         Runnable r2 = () -> System.out.println("bar");
         new Thread(()-> {
