@@ -86,6 +86,43 @@ public class Playground {
                 .stream().parallel()
                 .reduce(0, (a,b) -> (a - b)));
 
+        Playground pg = new Playground();
+
+
+        Runnable r3 = () -> {
+            synchronized (pg) {
+                pg.incrementCounter();
+            }
+        };
+
+        ExecutorService service = null;
+        ReentrantLock lock = new ReentrantLock();
+        try {
+            service = Executors.newCachedThreadPool();
+            System.out.println("start");
+//            Future<?> future = service.submit(r2);
+//            Future<?> f2 = service.submit(r1);
+            for(int i = 0; i < 10; i++) {
+                service.submit(() -> {
+                    pg.incrementCounter(lock);
+                });
+            }
+            TimeUnit.SECONDS.sleep(1);
+//            if(lock.tryLock()) {
+//                try {
+//                    System.out.println("Lock obtained, entering protected code");
+//                } finally {
+//                    lock.unlock();
+//                }
+//            } else {
+//                System.out.println("Unable to acquire lock, doing something else");
+//            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            assert service != null;
+            service.shutdown();
+        }
     }
 }
 

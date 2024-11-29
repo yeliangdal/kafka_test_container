@@ -3,6 +3,7 @@ package kafkaTestContainer.playground;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
+import java.util.stream.IntStream;
 
 class H2O {
     CyclicBarrier cyclicBarrier;
@@ -42,23 +43,28 @@ class H2O {
         Runnable r1 = () -> System.out.println("h");
         Runnable r2 = () -> System.out.println("o");
         int count = 5;
-        for(int i=0; i<2*count;i++) {
-            new Thread(() -> {
-                try {
-                    h2o.hydrogen(r1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-        }
-        for(int i=0; i<count;i++) {
-            new Thread(() -> {
-                try {
-                    h2o.oxygen(r2);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-        }
+
+        IntStream.range(0, 2*count)
+                .parallel()
+                .forEach(i -> {
+                    new Thread(() -> {
+                        try {
+                            h2o.hydrogen(r1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                });
+        IntStream.iterate(0, i->i<count, i->i+1)
+                .forEach(i -> {
+                    new Thread(() -> {
+                        try {
+                            h2o.oxygen(r2);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                        }
+                );
     }
 }

@@ -3,60 +3,64 @@
  */
 package kafkaTestContainer;
 
-import kafkaTestContainer.playground.Playground;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TransferQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.*;
+import java.util.stream.IntStream;
 
 public class App {
 
     public static void main(String[] args) {
-        Playground pg = new Playground();
-//        Runnable r1 = () -> {
-//            for(int i = 0; i < 20; i++) {
-////                System.out.print(counter.getAndAdd(1)+" ");
-//                System.out.print(++pg.c+" ");
-//            }
-//        };
 
-        Runnable r3 = () -> {
-            synchronized (pg) {
-                pg.incrementCounter();
-            }
-        };
+//        IntStream.range(0, 5)
+//                .forEach(System.out::println);
 
-        ExecutorService service = null;
-        ReentrantLock lock = new ReentrantLock();
-        try {
-            service = Executors.newCachedThreadPool();
-            System.out.println("start");
-//            Future<?> future = service.submit(r2);
-//            Future<?> f2 = service.submit(r1);
-            for(int i = 0; i < 10; i++) {
-                service.submit(() -> {
-                    pg.incrementCounter(lock);
-                });
-            }
-            TimeUnit.SECONDS.sleep(1);
-//            if(lock.tryLock()) {
-//                try {
-//                    System.out.println("Lock obtained, entering protected code");
-//                } finally {
-//                    lock.unlock();
-//                }
-//            } else {
-//                System.out.println("Unable to acquire lock, doing something else");
-//            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } finally {
-            assert service != null;
-            service.shutdown();
-        }
+        List<Integer> ints = new ArrayList<>(List.of(3, 45, 23, 4, 4, 12));
+//        ints.sort((a, b) -> b-a);
+//        ints.forEach(System.out::println);
+//        ints.stream().sorted((a,b) -> a-b)
+//                .forEach(System.out::println);
 
+//        Set<Integer> intSets = new HashSet<>(ints);
+//        intSets.forEach(System.out::println);
+//
+//        List<String> strings = Arrays.asList("one", "two", "three");
+//        List<String> strings2 = new ArrayList<>(List.copyOf(strings));
+//        strings2.add("four");
+//        strings2.forEach(System.out::println);
+
+//        Map.Entry<Integer, String> e1 = Map.entry(1, "one");
+//        Map.Entry<Integer, String> e2 = Map.entry(2, "two");
+//        Map.Entry<Integer, String> e3 = Map.entry(3, "three");
+//
+//        Map<Integer, String> map = new HashMap<>(Map.ofEntries(e1, e2, e3));
+//        Set<Integer> keys = map.keySet();
+//        System.out.println(map.putIfAbsent(4, "four"));
+
+//        Map<String, Integer> map = new HashMap<>();
+//
+//        map.put("one", 1);
+//        map.put("two", null);
+//        map.put("three", 3);
+//        map.put("four", null);
+//        map.put("five", 5);
+//
+//        for (int value : map.values()) {
+//            System.out.println("value = " + value);
+//        }
+
+        List<String> strings = List.of("one", "two", "three", "four", "five", "six", "seven");
+        Map<Integer, List<String>> map = new HashMap<>();
+//        for (String word: strings) {
+//            int length = word.length();
+//            map.putIfAbsent(length, new ArrayList<>());
+//            map.get(length).add(word);
+//        }
+        strings.forEach(word -> {
+            int length = word.length();
+//            map.putIfAbsent(length, new ArrayList<>());
+//            map.get(length).add(word);
+            map.computeIfAbsent(length, k -> new ArrayList<>()).add(word);
+        });
+
+        map.forEach((key, value) -> System.out.println(key + " :: " + value));
     }
 }
