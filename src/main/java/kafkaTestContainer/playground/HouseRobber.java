@@ -9,7 +9,6 @@ public class HouseRobber {
     private Map<Integer, Integer> memo = new HashMap<>();
     private int[] nums;
 
-
     private int dp(int index) {
         if (index == 0)
             return nums[0];
