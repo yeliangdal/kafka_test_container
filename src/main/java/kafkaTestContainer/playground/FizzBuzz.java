@@ -51,7 +51,7 @@ public class FizzBuzz {
     // printNumber.accept(x) outputs "x", where x is an integer.
     public void number(IntConsumer printNumber) throws InterruptedException {
         for(int i=1; i<= n; i++) {
-
+            numberSemaphore.acquire();
             if (i%3==0 && i%5 == 0){
                 fizzbuzzSemaphore.release(1);
             } else if(i%3==0) {
@@ -59,8 +59,8 @@ public class FizzBuzz {
             } else if(i%5==0) {
                 buzzSemaphore.release(1);
             } else {
-                numberSemaphore.acquire();
                 printNumber.accept(i);
+                numberSemaphore.release();
             }
         }
     }
